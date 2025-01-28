@@ -1,6 +1,6 @@
 {
   "name": "lrf-master",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A basic folder structure for Node.js projects with user model and helpers",
   "main": "src/app.js",
   "repository": {
