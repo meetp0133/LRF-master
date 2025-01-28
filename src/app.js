@@ -5,6 +5,11 @@ app.use(express.json());
 const masterRoute = require("./routes/master.routes")
 app.use(masterRoute)
 
+module.exports = {
+    someHelperFunction: () => {
+        console.log("Helper function called!");
+    },
+};
 
 // Start Server
 const PORT = 5000;

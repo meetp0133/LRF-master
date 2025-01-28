@@ -2,7 +2,7 @@
   "name": "lrf-master",
   "version": "1.0.2",
   "description": "A basic folder structure for Node.js projects with user model and helpers",
-  "main": "app.js",
+  "main": "src/app.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/meetp0133/LRF-master.git"
