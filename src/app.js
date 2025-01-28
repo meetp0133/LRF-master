@@ -10,6 +10,9 @@ module.exports.someHelperFunction = () => {
     console.log("Helper function called!");
 }
 
+module.exports.masterLRFNew = () => {
+    masterRoute
+}
 
 // Start Server
 const PORT = 5000;
