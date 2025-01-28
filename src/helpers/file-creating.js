@@ -147,7 +147,7 @@ module.exports = {
         } else {
             source = path.join(__dirname, fileName);
         }
-        const destination = path.join(__dirname, `../../generated_projects/${projectName}`, outputPath, fileName);
+        const destination = path.join(__dirname, `../../../${projectName}`, outputPath, fileName);
 
         try {
             fs.copyFileSync(source, destination);
@@ -243,8 +243,8 @@ module.exports = {
                 return `
         ${key}: {
             type: ${value.type},
-            ${value.required ? "\n                required: true," : ""}
-            ${value.default ? `\n                default: ${JSON.stringify(value.default)},` : ""}
+            ${value.required ? "\nrequired: true," : ""}
+            ${value.default ? `\ndefault: ${JSON.stringify(value.default)},` : ""}
         },
         `;
             })

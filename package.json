@@ -1,14 +1,25 @@
 {
   "name": "lrf-master",
   "version": "1.0.0",
-  "description": "",
+  "description": "A basic folder structure for Node.js projects with user model and helpers",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meetp0133/LRF-master.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start" :"node src/app.js"
+    "start": "node src/app.js"
   },
   "author": "Meet",
-  "license": "ISC",
+  "license": "MIT",
+  "keywords": [
+    "nodejs",
+    "folder-structure",
+    "starter",
+    "user-model",
+    "helpers"
+  ],
   "dependencies": {
     "archiver": "^7.0.1",
     "express": "^4.21.2"

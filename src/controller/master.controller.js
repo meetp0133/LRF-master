@@ -12,8 +12,10 @@ module.exports.masterLRF = async (req, res) => {
     if (!projectTitle) {
         return res.status(400).json({ error: "Project title is required." });
     }
-    const projectPath = path.join(__dirname, "../../generated_projects", projectTitle);
-    const projectSrcPath = path.join(__dirname, "../../generated_projects", `${projectTitle}/src`);
+    const projectPath = path.join(__dirname, "../../../", projectTitle);
+    const projectSrcPath = path.join(__dirname, "../../../`", `${projectTitle}/src`);
+    console.log('projectSrcPatht',projectSrcPath);
+    // return false
     try {
 
         // 1. Create Base Structure
@@ -87,6 +89,7 @@ module.exports.masterLRF = async (req, res) => {
             i18nJson
         );
 
+        //Copy helper and index files
         helper.copyHelperFunction(projectTitle, "dateFormat.helper.js", "", "src/helpers")
         helper.copyHelperFunction(projectTitle, "helper.js", "", "src/helpers")
         helper.copyHelperFunction(projectTitle, "loggerService.js", "", "src/helpers")
@@ -95,23 +98,6 @@ module.exports.masterLRF = async (req, res) => {
 
         // 4. Generate Models
         helper.generateSchemaFile(`${projectSrcPath}/models`,models)
-
-
-        //         models.forEach((model) => {
-        //             const schemaContent = `const mongoose = require('mongoose');
-        //   const ${model.name}Schema = new mongoose.Schema(${JSON.stringify(
-        //                 model.schema,
-        //                 null,
-        //                 2
-        //             )});
-        //   module.exports = mongoose.model('${model.name}', ${model.name}Schema);
-        //   `;
-        //             writeFile(
-        //                 path.join(projectPath, "models", `${model.name}.js`),
-        //                 schemaContent
-        //             );
-        //         });
-
 
         // 5. Install Dependencies (Optional)
         let dependencies = ["bcrypt", "cors", "dotenv", "ejs", "express", "helmet", "i18n", "joi","express-rate-limit",
@@ -131,18 +117,18 @@ module.exports.masterLRF = async (req, res) => {
 
         // 6. Zip the Project
         console.log('__dirname------------', __dirname);
-        // const zipPath = path.join(__dirname, `../../${projectTitle}.zip`);
+        const zipPath = path.join(__dirname, `../../${projectTitle}.zip`);
 
-        // const output = fs.createWriteStream(zipPath);
-        // const archive = archiver("zip", { zlib: { level: 9 } });
-        // output.on("close", () => {
-        //     res.json({ downloadLink: `/download/${projectTitle}.zip` });
-        // });
+        const output = fs.createWriteStream(zipPath);
+        const archive = archiver("zip", { zlib: { level: 9 } });
+        output.on("close", () => {
+            res.json({ downloadLink: `/download/${projectTitle}.zip` });
+        });
 
-        // archive.pipe(output);
-        // archive.directory(projectPath, false);
-        // archive.finalize();
-        return res.send({ message: "project created" })
+        archive.pipe(output);
+        archive.directory(projectPath, false);
+        archive.finalize();
+        // return res.send({ message: "project created" })
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Failed to generate project." });

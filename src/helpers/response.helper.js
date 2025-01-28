@@ -29,9 +29,7 @@ const successapi = async (res, message, status = constants.META_STATUS.DATA, sta
 const error = async (res, message, statusCode = constants.WEB_STATUS_CODE.SERVER_ERROR, error = false) => {
 	try {
 		const response = {
-			meta: {
-				message,
-			},
+			message,
 			statusCode
 		};
 
