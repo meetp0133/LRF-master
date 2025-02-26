@@ -12,9 +12,9 @@ module.exports.masterLRF = async (req, res) => {
     if (!projectTitle) {
         return res.status(400).json({ error: "Project title is required." });
     }
-    const projectPath = path.join(__dirname, "../../../", projectTitle);
-    const projectSrcPath = path.join(__dirname, "../../../`", `${projectTitle}/src`);
-    console.log('projectSrcPatht',projectSrcPath);
+    const projectPath = path.join(__dirname, "../../generatedProject/", projectTitle);
+    const projectSrcPath = path.join(__dirname, "../../generatedProject", `${projectTitle}/src`);
+    console.log('projectSrcPatht', projectSrcPath);
     // return false
     try {
 
@@ -44,9 +44,10 @@ module.exports.masterLRF = async (req, res) => {
         createDir(path.join(projectSrcPath, "models"));
         createDir(path.join(projectSrcPath, "routes"));
         createDir(path.join(`${projectSrcPath}/routes`, "/api/v1"));
-        createDir(path.join(projectSrcPath, "controllers"));
-        createDir(path.join(`${projectSrcPath}/controllers`, "v1"));
+        createDir(path.join(projectSrcPath, "controller"));
+        createDir(path.join(`${projectSrcPath}/controller`, "/v1"));
         createDir(path.join(projectSrcPath, "connection"));
+        createDir(path.join(projectSrcPath, "middleware"));
         createDir(path.join(projectSrcPath, "validation"));
         createDir(path.join(projectSrcPath, "helpers"));
         createDir(path.join(projectSrcPath, "transformer"));
@@ -95,12 +96,26 @@ module.exports.masterLRF = async (req, res) => {
         helper.copyHelperFunction(projectTitle, "loggerService.js", "", "src/helpers")
         helper.copyHelperFunction(projectTitle, "response.helper.js", "", "src/helpers")
         helper.copyHelperFunction(projectTitle, "index.js", "../", "src/")
+        helper.copyHelperFunction(projectTitle, "user.controller.js", "../controller/v1/", "src/controller/v1")
+        helper.copyHelperFunction(projectTitle, "user.tranformer.js", "../transformer", "src/transformer")
+        helper.copyHelperFunction(projectTitle, "uploadImage.js", "../middleware", "src/middleware")
+        helper.copyHelperFunction(projectTitle, "user.auth.js", "../middleware", "src/middleware")
+        helper.copyHelperFunction(projectTitle, "common.routes.js", "../routes/", "src/routes")
+
+        helper.copyHelperFunction(projectTitle, "user.route.js", "../routes/api/v1", "src/routes/api/v1/")
+
+        helper.copyHelperFunction(projectTitle, "user.validation.js", "../validation", "src/validation/")
+        helper.copyHelperFunction(projectTitle, "forgot-password.ejs", "../view", "src/view/")
+        helper.copyHelperFunction(projectTitle, "otp-verification.ejs", "../view", "src/view/")
+        helper.copyHelperFunction(projectTitle, "resend-otp-verification.ejs", "../view", "src/view/")
+        helper.copyHelperFunction(projectTitle, "welcome-user.ejs", "../view", "src/view/")
+
 
         // 4. Generate Models
-        helper.generateSchemaFile(`${projectSrcPath}/models`,models)
+        helper.generateSchemaFile(`${projectSrcPath}/models`, models)
 
         // 5. Install Dependencies (Optional)
-        let dependencies = ["bcrypt", "cors", "dotenv", "ejs", "express", "helmet", "i18n", "joi","express-rate-limit",
+        let dependencies = ["bcrypt", "cors", "dotenv", "ejs", "express", "helmet", "i18n", "joi", "express-rate-limit",
             "joi-objectid", "jsonwebtoken", "moment", "mongoose", "multer", "nodemailer", "winston", "morgan"]
         if (dependencies && dependencies.length) {
             exec(
@@ -116,13 +131,24 @@ module.exports.masterLRF = async (req, res) => {
 
 
         // 6. Zip the Project
+
+        const zipDir = path.join(__dirname, "../../public/zips");
+        if (!fs.existsSync(zipDir)) {
+            fs.mkdirSync(zipDir, { recursive: true });
+        }
+
+
         console.log('__dirname------------', __dirname);
-        const zipPath = path.join(__dirname, `../../${projectTitle}.zip`);
+
+        const zipPath = path.join(zipDir, `${projectTitle}.zip`);
+        console.log('zipPath------------', zipPath);
 
         const output = fs.createWriteStream(zipPath);
         const archive = archiver("zip", { zlib: { level: 9 } });
+
         output.on("close", () => {
-            res.json({ downloadLink: `/download/${projectTitle}.zip` });
+            const downloadLink = `/downloads/${projectTitle}.zip`;
+            res.json({ message: "Project created successfully!", downloadLink });
         });
 
         archive.pipe(output);
@@ -143,8 +169,8 @@ module.exports.masterLRFNew = async (req, res) => {
         return res.status(400).json({ error: "Project title is required." });
     }
     const projectPath = path.join(__dirname, "../../../", projectTitle);
-    const projectSrcPath = path.join(__dirname, "../../../`", `${projectTitle}/src`);
-    console.log('projectSrcPatht',projectSrcPath);
+    const projectSrcPath = path.join(__dirname, "../../../", `${projectTitle}/src`);
+    console.log('projectSrcPatht', projectSrcPath);
     // return false
     try {
 
@@ -227,10 +253,10 @@ module.exports.masterLRFNew = async (req, res) => {
         helper.copyHelperFunction(projectTitle, "index.js", "../", "src/")
 
         // 4. Generate Models
-        helper.generateSchemaFile(`${projectSrcPath}/models`,models)
+        helper.generateSchemaFile(`${projectSrcPath}/models`, models)
 
         // 5. Install Dependencies (Optional)
-        let dependencies = ["bcrypt", "cors", "dotenv", "ejs", "express", "helmet", "i18n", "joi","express-rate-limit",
+        let dependencies = ["bcrypt", "cors", "dotenv", "ejs", "express", "helmet", "i18n", "joi", "express-rate-limit",
             "joi-objectid", "jsonwebtoken", "moment", "mongoose", "multer", "nodemailer", "winston", "morgan"]
         if (dependencies && dependencies.length) {
             exec(
@@ -247,12 +273,12 @@ module.exports.masterLRFNew = async (req, res) => {
 
         // 6. Zip the Project
         console.log('__dirname------------', __dirname);
-        const zipPath = path.join(__dirname, `../../${projectTitle}.zip`);
-
+        const zipPath = path.join(__dirname, `../../../${projectTitle}.zip`);
+        console.log('zipPath------------------', zipPath);
         const output = fs.createWriteStream(zipPath);
         const archive = archiver("zip", { zlib: { level: 9 } });
         output.on("close", () => {
-            res.json({ downloadLink: `/download/${projectTitle}.zip` });
+            res.json({ downloadLink: `../../../${projectTitle}.zip` });
         });
 
         archive.pipe(output);

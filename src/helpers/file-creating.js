@@ -147,8 +147,7 @@ module.exports = {
         } else {
             source = path.join(__dirname, fileName);
         }
-        const destination = path.join(__dirname, `../../../${projectName}`, outputPath, fileName);
-
+        const destination = path.join(__dirname, `../../generatedProject/${projectName}`, outputPath, fileName);
         try {
             fs.copyFileSync(source, destination);
             console.log("File copied successfully!");
