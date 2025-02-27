@@ -95,6 +95,8 @@ module.exports.masterLRF = async (req, res) => {
         helper.copyHelperFunction(projectTitle, "helper.js", "", "src/helpers")
         helper.copyHelperFunction(projectTitle, "loggerService.js", "", "src/helpers")
         helper.copyHelperFunction(projectTitle, "response.helper.js", "", "src/helpers")
+        helper.copyHelperFunction(projectTitle, "response.helper.js", "", "src/helpers")
+        helper.copyHelperFunction(projectTitle, "mailer.js", "", "src/helpers")
         helper.copyHelperFunction(projectTitle, "index.js", "../", "src/")
         helper.copyHelperFunction(projectTitle, "user.controller.js", "../controller/v1/", "src/controller/v1")
         helper.copyHelperFunction(projectTitle, "user.tranformer.js", "../transformer", "src/transformer")
@@ -115,7 +117,7 @@ module.exports.masterLRF = async (req, res) => {
         helper.generateSchemaFile(`${projectSrcPath}/models`, models)
 
         // 5. Install Dependencies (Optional)
-        let dependencies = ["bcrypt", "cors", "dotenv", "ejs", "express", "helmet", "i18n", "joi", "express-rate-limit",
+        let dependencies = ["bcryptjs", "cors", "dotenv", "ejs", "express", "helmet", "i18n", "joi", "express-rate-limit",
             "joi-objectid", "jsonwebtoken", "moment", "mongoose", "multer", "nodemailer", "winston", "morgan"]
         if (dependencies && dependencies.length) {
             exec(
@@ -131,29 +133,31 @@ module.exports.masterLRF = async (req, res) => {
 
 
         // 6. Zip the Project
+        setTimeout(()=>{
+            const zipDir = path.join(__dirname, "../../public/zips");
+            if (!fs.existsSync(zipDir)) {
+                fs.mkdirSync(zipDir, { recursive: true });
+            }
+    
+    
+            console.log('__dirname------------', __dirname);
+    
+            const zipPath = path.join(zipDir, `${projectTitle}.zip`);
+            console.log('zipPath------------', zipPath);
+    
+            const output = fs.createWriteStream(zipPath);
+            const archive = archiver("zip", { zlib: { level: 9 } });
+    
+            output.on("close", () => {
+                const downloadLink = `/downloads/${projectTitle}.zip`;
+                res.json({ message: "Project created successfully!", downloadLink });
+            });
+    
+            archive.pipe(output);
+            archive.directory(projectPath, false);
+            archive.finalize();
+        },2000)
 
-        const zipDir = path.join(__dirname, "../../public/zips");
-        if (!fs.existsSync(zipDir)) {
-            fs.mkdirSync(zipDir, { recursive: true });
-        }
-
-
-        console.log('__dirname------------', __dirname);
-
-        const zipPath = path.join(zipDir, `${projectTitle}.zip`);
-        console.log('zipPath------------', zipPath);
-
-        const output = fs.createWriteStream(zipPath);
-        const archive = archiver("zip", { zlib: { level: 9 } });
-
-        output.on("close", () => {
-            const downloadLink = `/downloads/${projectTitle}.zip`;
-            res.json({ message: "Project created successfully!", downloadLink });
-        });
-
-        archive.pipe(output);
-        archive.directory(projectPath, false);
-        archive.finalize();
         // return res.send({ message: "project created" })
     } catch (error) {
         console.error(error);
@@ -272,18 +276,7 @@ module.exports.masterLRFNew = async (req, res) => {
 
 
         // 6. Zip the Project
-        console.log('__dirname------------', __dirname);
-        const zipPath = path.join(__dirname, `../../../${projectTitle}.zip`);
-        console.log('zipPath------------------', zipPath);
-        const output = fs.createWriteStream(zipPath);
-        const archive = archiver("zip", { zlib: { level: 9 } });
-        output.on("close", () => {
-            res.json({ downloadLink: `../../../${projectTitle}.zip` });
-        });
-
-        archive.pipe(output);
-        archive.directory(projectPath, false);
-        archive.finalize();
+        setTimeout
         // return res.send({ message: "project created" })
     } catch (error) {
         console.error(error);

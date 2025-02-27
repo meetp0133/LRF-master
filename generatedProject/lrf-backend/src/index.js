@@ -79,7 +79,6 @@ app.use(helmet());
 
 // Api routes
 const commonRoute = require('./routes/common.routes');
-logger.info('Loaded common routes');
 app.use(commonRoute);
 
 const publicDirectory = path.join(__dirname, '../');
