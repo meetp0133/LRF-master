@@ -30,6 +30,7 @@ module.exports = {
             SENDER_PASSWORD: process.env.SENDER_PASSWORD,
             EMAIL_SERVICE: process.env.EMAIL_SERVICE,
             ENVIRONMENT: process.env.ENVIRONMENT,
+            BASE_URL: process.env.BASE_URL,
             PAGINATION_LIMIT : 10,
             IS_SSL : process.env.IS_SSL
         }`
@@ -43,7 +44,8 @@ module.exports = {
             PORT = 3000
             JWT_AUTH_TOKEN_SECRET = M5gqAbXVzErKf4XMf3BZcE0UTx0FhLCTPF0vXYKpTUHUvq5QiX46GA9A6EEQJ3LPYDPXyCTvrVDyqWGmWBdTigEBUvK7TG6teHX2
             JWT_EXPIRES_IN = 365d
-            IMAGE_LINK = 'http://localhost:3003/public/uploads/'
+            IMAGE_LINK = 'http://localhost:3000/public/uploads/'
+            BASE_URL = 'http://localhost:3000/'
             SENDER_EMAIL = SENDER_EMAIL
             SENDER_PASSWORD = SENDER_PASSWORD
             EMAIL_SERVICE = 'gmail'

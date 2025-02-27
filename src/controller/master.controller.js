@@ -156,7 +156,7 @@ module.exports.masterLRF = async (req, res) => {
             archive.pipe(output);
             archive.directory(projectPath, false);
             archive.finalize();
-        },2000)
+        },10000)
 
         // return res.send({ message: "project created" })
     } catch (error) {
