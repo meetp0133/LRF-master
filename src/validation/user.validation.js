@@ -5,14 +5,12 @@ const registerUserValidation = (req, res, next) => {
     const schema = Joi.object({
         firstName: Joi.string().required(),
         lastName: Joi.string().required(),
-        userName: Joi.string().required(),
         email: Joi.string().required().email(),
         password: Joi.string().required(),
-        confirmPassword: Joi.string().required(),
-        bio: Joi.string().optional().allow("")
+        confirmPassword: Joi.string().required()
     }).unknown(true);
 
-    const { error } = schema.validate(req.query);
+    const { error } = schema.validate(req.body);
     if (error) req.validationMessage = helper.validationMessageKey('validation', error);
     next();
 

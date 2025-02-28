@@ -119,7 +119,9 @@ module.exports = {
                 },
 
                 PAGE: 1,
-                LIMIT: 10
+                LIMIT: 10,
+                
+                USER_PROFILE_IMAGE_UPLOAD_PATH_LOCAL : "public/uploads/user"
                 }`
     },
     i18nJson: () => {
@@ -179,6 +181,9 @@ module.exports = {
                 lowercase: true
             },
             password: {
+                type: String
+            },   
+            profileImage: {
                 type: String
             },
             isVerified: {
@@ -256,7 +261,8 @@ module.exports = {
             const jwt = require('jsonwebtoken');
             const dateFormat = require('../helpers/dateFormat.helper');
             const constants = require('../../config/constants');
-    
+            const { JWT_AUTH_TOKEN_SECRET, JWT_EXPIRES_IN } = require('../../config/key');
+            
             const ${model.name}Schema = new mongoose.Schema({
                 // Dynamic fields
                 ${dynamicFields}

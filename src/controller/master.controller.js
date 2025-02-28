@@ -134,7 +134,7 @@ module.exports.masterLRF = async (req, res) => {
 
         // 6. Zip the Project
         setTimeout(()=>{
-            const zipDir = path.join(__dirname, "../../public/zips");
+            const zipDir = path.join(__dirname, `../../../${projectTitle}`);
             if (!fs.existsSync(zipDir)) {
                 fs.mkdirSync(zipDir, { recursive: true });
             }
@@ -156,7 +156,7 @@ module.exports.masterLRF = async (req, res) => {
             archive.pipe(output);
             archive.directory(projectPath, false);
             archive.finalize();
-        },10000)
+        },20000)
 
         // return res.send({ message: "project created" })
     } catch (error) {
@@ -210,7 +210,8 @@ module.exports.masterLRFNew = async (req, res) => {
         createDir(path.join(projectSrcPath, "validation"));
         createDir(path.join(projectSrcPath, "helpers"));
         createDir(path.join(projectSrcPath, "transformer"));
-        createDir(path.join(projectSrcPath, "view"));
+        createDir(path.join(projectSrcPath, "views"));
+        createDir(path.join(`${projectSrcPath}/views`, "emails"));
         createDir(path.join(projectSrcPath, "i18n"));
         createDir(path.join(projectPath, "config"));
 

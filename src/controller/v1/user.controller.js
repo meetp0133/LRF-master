@@ -11,7 +11,7 @@ const { ENVIRONMENT } = require("../../../config/key");
 
 module.exports.register = async (req, res) => {
     try {
-        const reqBody = req.query;
+        const reqBody = req.body;
 
         const checkEmailExist = await UserModel.findOne({ email: reqBody.email, status: constants.STATUS.ACTIVE });
         if (checkEmailExist) {
@@ -254,7 +254,8 @@ module.exports.viewProfile = async (req, res) => {
         let userId = req.user._id;
 
         const checkUser = await UserModel.findOne({_id:userId});
-        if (!checkUser[0]?.data[0]) return responseHelper.successapi(res, res.__('userNotFound'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
+        if (!checkUser) return responseHelper.successapi(res, res.__('userNotFound'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
+        const response = userViewTransformer(checkUser);
 
         return responseHelper.successapi(res, res.__('userProfileFoundSuccessFully'), constants.META_STATUS.DATA, constants.WEB_STATUS_CODE.OK, response);
     } catch (err) {
@@ -266,7 +267,7 @@ module.exports.viewProfile = async (req, res) => {
 module.exports.editProfile = async (req, res) => {
     try {
         const userId = req.user._id;
-        const reqBody = req.query;
+        const reqBody = req.body;
 
         let userData = await UserModel.findOne({ _id: userId, status: constants.STATUS.ACTIVE });
 
@@ -281,7 +282,7 @@ module.exports.editProfile = async (req, res) => {
 
         userData.firstName = reqBody.firstName;
         userData.lastName = reqBody.lastName;
-        userData.profileImage = req?.files?.profileImage ? await compressImage(req?.files?.profileImage?.[0]?.filename, "user") : userData.profileImage;
+        userData.profileImage = req?.files?.profileImage ? req?.files?.profileImage?.[0]?.filename : userData.profileImage;
 
         await userData.save();
 
