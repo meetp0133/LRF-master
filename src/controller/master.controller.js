@@ -4,10 +4,11 @@ const fs = require("fs");
 const path = require("path");
 const archiver = require("archiver");
 const { exec } = require("child_process");
+const { default: simpleGit } = require("simple-git");
 
 // API to generate project
-module.exports.masterLRF = async (projectTitle) => {
-    // const { projectTitle, models } = req.body;
+module.exports.masterLRF = async (req, res) => {
+    const { projectTitle, models } = req.body;
 
     if (!projectTitle) {
         return res.status(400).json({ error: "Project title is required." });
@@ -58,20 +59,20 @@ module.exports.masterLRF = async (projectTitle) => {
         createDir(path.join(projectSrcPath, "i18n"));
         createDir(path.join(projectPath, "config"));
 
-          // Initialize git if requested
-          if (config.git) {
-            const git = simpleGit(projectPath);
-            await git.init();
-            helper.writeFile(`${projectPath}`, '', '.gitignore', helper.generateGitIgnore());
+        // Initialize git if requested
+        // if (config.git) {
+        //     const git = simpleGit(projectPath);
+        //     await git.init();
+        //     helper.writeFile(`${projectPath}`, '', '.gitignore', helper.generateGitIgnore());
 
-            // await git.add('.');
-            // await git.commit('Initial commit');
-        }
+        //     // await git.add('.');
+        //     // await git.commit('Initial commit');
+        // }
 
-        // Open project in VS Code if requested
-        if (config.openCode) {
-            exec(`cd ${projectPath} && code .`)
-        }
+        // // Open project in VS Code if requested
+        // if (config.openCode) {
+        //     exec(`cd ${projectPath} && code .`)
+        // }
 
 
         // Generate .ENV
@@ -135,16 +136,16 @@ module.exports.masterLRF = async (projectTitle) => {
         helper.copyHelperFunction(projectTitle, "user.controller.js", "../controller/v1/", "src/controller/v1")
         helper.copyHelperFunction(projectTitle, "admin.controller.js", "../controller/admin/", "src/controller/admin")
         helper.copyHelperFunction(projectTitle, "cms.controller.js", "../controller/admin/", "src/controller/admin")
-        
+
         //Transformer
         helper.copyHelperFunction(projectTitle, "user.transformer.js", "../transformer", "src/transformer")
         helper.copyHelperFunction(projectTitle, "admin.transformer.js", "../transformer", "src/transformer")
         helper.copyHelperFunction(projectTitle, "cms.transformer.js", "../transformer", "src/transformer")
-        
+
         //Middleware
         helper.copyHelperFunction(projectTitle, "uploadImage.js", "../middleware", "src/middleware")
         helper.copyHelperFunction(projectTitle, "user.auth.js", "../middleware", "src/middleware")
-        
+
         //Routes
         helper.copyHelperFunction(projectTitle, "common.routes.js", "../routes/", "src/routes")
         helper.copyHelperFunction(projectTitle, "user.route.js", "../routes/api/v1", "src/routes/api/v1/")
@@ -155,7 +156,7 @@ module.exports.masterLRF = async (projectTitle) => {
         helper.copyHelperFunction(projectTitle, "user.validation.js", "../validations", "src/validations/")
         helper.copyHelperFunction(projectTitle, "admin.validation.js", "../validations", "src/validations/")
         helper.copyHelperFunction(projectTitle, "cms.validation.js", "../validations", "src/validations/")
-        
+
         //Email templates
         helper.copyHelperFunction(projectTitle, "forgot-password.ejs", "../view", "src/view/")
         helper.copyHelperFunction(projectTitle, "otp-verification.ejs", "../view", "src/view/")

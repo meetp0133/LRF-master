@@ -4,13 +4,14 @@ const adminController = require('../../controller/admin/admin.controller');
 const verifyToken = require('../../middleware/user.auth');
 const adminValidation = require("../../validations/admin.validation");
 const { validatorFunction } = require('../../helpers/response.helper');
+const { validMulterUploadMiddleware, uploadImage } = require('../../middleware/uploadImage');
 
 router.get('/', (req, res) => res.send('Welcome to admin route'));
 
 //admin
 router.post('/login', adminValidation.loginValidation, validatorFunction, adminController.login);
 router.post('/view-profile', verifyToken.adminAuth, adminController.viewProfile);
-router.post('/edit-profile', verifyToken.adminAuth, adminValidation.editProfileValidation, validatorFunction, adminController.editProfile);
+router.post('/edit-profile', verifyToken.adminAuth, validMulterUploadMiddleware(uploadImage), adminValidation.editProfileValidation, validatorFunction, adminController.editProfile);
 router.post('/forgot-password', adminValidation.forgotPasswordValidation, validatorFunction, adminController.forgotPassword);
 router.post('/reset-password', adminValidation.resetPasswordValidation, validatorFunction, adminController.resetPassword);
 router.post('/resend-otp', adminValidation.forgotPasswordValidation, validatorFunction, adminController.resendOtp);

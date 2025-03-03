@@ -58,8 +58,7 @@ module.exports.editProfileValidation = async (req, res, next) => {
     const schema = Joi.object({
         firstName: Joi.string(),
         lastName: Joi.string(),
-        mobileNumber: Joi.string().pattern(/^[0-9]+$/),
-        email: Joi.string().email().required(),
+        mobileNumber: Joi.string().pattern(/^[0-9]+$/)
     }).unknown(true);
     const { error } = schema.validate(req.body);
     if (error) {

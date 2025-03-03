@@ -33,20 +33,13 @@ program
                         name: 'openCode',
                         message: 'Open project in VS Code ?',
                         default: false
-                    },
-                    {
-                        type: 'confirm',
-                        name: 'installPackages',
-                        message: 'Do you want to install npm packages ?',
-                        default: false
                     }
                 ]);
                 gitInit = answers.git;
                 openCode = answers.openCode;
-                installPackages = answers.installPackages;
             }
 
-            const config = { git: gitInit, openCode: openCode, installPackages: installPackages };
+            const config = { git: gitInit, openCode: openCode };
 
             console.log('🔧 Creating project with options:', config);
 

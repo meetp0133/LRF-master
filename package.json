@@ -1,8 +1,11 @@
 {
   "name": "lrf-master",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A basic folder structure for Node.js projects with user model and helpers",
   "main": "index.js",
+  "bin": {
+    "generate": "./bin/cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/meetp0133/LRF-master.git"
@@ -22,7 +25,9 @@
   ],
   "dependencies": {
     "archiver": "^7.0.1",
+    "commander": "^13.1.0",
     "express": "^4.21.2",
+    "inquirer": "^12.4.2",
     "simple-git": "^3.27.0"
   }
 }

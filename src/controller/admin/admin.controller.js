@@ -4,8 +4,9 @@ const bcrypt = require('bcryptjs')
 const Admin = require('../../models/admin');
 const helper = require('../../helpers/helper.js');
 const constants = require('../../../config/constants.js');
-const responseHelper = require('../../helpers/helper.js');
-const dateFormat = require('../../helpers/helper.js');
+const responseHelper = require('../../helpers/response.helper.js');
+const dateFormat = require('../../helpers/dateFormat.helper.js');
+
 const adminTransformer = require('../../transformer/admin.transformer')
 const { BASE_URL, ENVIRONMENT } = require('../../../config/key.js');
 
@@ -131,44 +132,20 @@ exports.viewProfile = async (req, res) => {
 exports.editProfile = async (req, res) => {
     try {
         let reqBody = req.body;
-        console.log("profilePicture req.body ", req.body)
-
-        let emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-        // if (reqBody?.email && !emailRegex.test(reqBody?.email)) {
-        //     // return responseHelper.successapi(res, res.__('emailAlreadyInUse'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
-        //     return responseHelper.error(res, res.__('validationEmailEmail'), constants.WEB_STATUS_CODE.BAD_REQUEST);
-        // }
-
-        if (reqBody.email != req.user.email) {
-            let isEmailAlreadyInUse = await Admin.countDocuments({ email: reqBody.email, _id: { $ne: req.user._id } });
-            if (isEmailAlreadyInUse) {
-                return responseHelper.successapi(res, res.__('emailAlreadyInUse'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
-            }
-        }
+        console.log("profileImage req.body ", req.body)
 
         const foundAdmin = await Admin.findOne({ _id: req.admin._id, status: constants.STATUS.ACTIVE });
         if (!foundAdmin) return responseHelper.successapi(res, res.__('adminNotFound'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
+        let oldImage = foundAdmin ? foundAdmin.profileImage : ""
 
 
         foundAdmin.firstName = reqBody.firstName ? reqBody.firstName : foundAdmin.firstName;
         foundAdmin.lastName = reqBody.lastName ? reqBody.lastName : foundAdmin.lastName;
-        foundAdmin.email = reqBody.email ? reqBody.email : foundAdmin.email;
+        foundAdmin.profileImage = req?.files?.profileImage ? req?.files?.profileImage?.[0]?.filename : foundAdmin.profileImage;
 
-        if (req?.files?.profilePicture) {
-            if (typeof reqBody.profilePicture === "string") {
-                foundAdmin.profilePicture = foundAdmin.profilePicture
-            } else {
-                if (foundAdmin.profilePicture != '') await helper.deleteFile({
-                    'name': foundAdmin.profilePicture,
-                    folderName: 'admin'
-                });
-
-                foundAdmin.profilePicture = await helper.getFileName(req.files.profilePicture[0]);
-            }
-
-        }
 
         await foundAdmin.save();
+        if (oldImage && req?.files?.profileImage) helper.deleteLocalFile("user", oldImage)
 
         let adminDetail = adminTransformer.adminTransformer(foundAdmin);
         return responseHelper.successapi(res, res.__('profileUpdatedSuccessfully'), constants.META_STATUS.DATA, constants.WEB_STATUS_CODE.OK, adminDetail);

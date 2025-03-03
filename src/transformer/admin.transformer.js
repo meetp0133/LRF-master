@@ -6,7 +6,7 @@ exports.transformAdmin = (data) => {
         firstName: data?.firstName ? data.firstName : '',
         lastName: data?.lastName ? data.lastName : '',
         email: data?.email ? data.email : '',
-        profilePicture: data?.profilePicture ? helper.imageURL(data.profilePicture, 'admin', 'profileImage') : helper.imageURL(data.profilePicture, 'admin', 'profileImage'),
+        profileImage: data?.profileImage ? helper.imageURL(data.profileImage, 'user', 'profileImage') : helper.imageURL(data.profileImage, 'user', 'profileImage'),
         status: data?.status ? data.status : 1
     };
 };

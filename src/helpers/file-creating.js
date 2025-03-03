@@ -249,6 +249,7 @@ public
         // });
         // `;
         // Generate dynamic fields as nested objects
+        // if (model.schema) {
         const dynamicFields = Object.entries(model.schema)
             .map(([key, value]) => {
                 // Ensure the value is properly formatted as a nested object
@@ -261,6 +262,7 @@ public
         `;
             })
             .join("\n");
+        // }
         const schemaContent = `
             const mongoose = require('mongoose');
             const bcrypt = require('bcryptjs');
