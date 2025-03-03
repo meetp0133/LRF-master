@@ -1,6 +1,5 @@
 const Joi = require('joi');
-const { helper } = require('../../../common/index');
-
+const helper = require("../helpers/helper")
 
 exports.cmsViewValidation = (req, res, next) => {
     const schema = Joi.object({

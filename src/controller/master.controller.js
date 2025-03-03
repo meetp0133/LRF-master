@@ -6,8 +6,8 @@ const archiver = require("archiver");
 const { exec } = require("child_process");
 
 // API to generate project
-module.exports.masterLRF = async (req, res) => {
-    const { projectTitle, models } = req.body;
+module.exports.masterLRF = async (projectTitle) => {
+    // const { projectTitle, models } = req.body;
 
     if (!projectTitle) {
         return res.status(400).json({ error: "Project title is required." });
@@ -50,7 +50,7 @@ module.exports.masterLRF = async (req, res) => {
         createDir(path.join(`${projectSrcPath}/controller`, "/admin"));
         createDir(path.join(projectSrcPath, "connection"));
         createDir(path.join(projectSrcPath, "middleware"));
-        createDir(path.join(projectSrcPath, "validation"));
+        createDir(path.join(projectSrcPath, "validations"));
         createDir(path.join(projectSrcPath, "helpers"));
         createDir(path.join(projectSrcPath, "transformer"));
         createDir(path.join(projectSrcPath, "services"));
@@ -58,8 +58,25 @@ module.exports.masterLRF = async (req, res) => {
         createDir(path.join(projectSrcPath, "i18n"));
         createDir(path.join(projectPath, "config"));
 
+          // Initialize git if requested
+          if (config.git) {
+            const git = simpleGit(projectPath);
+            await git.init();
+            helper.writeFile(`${projectPath}`, '', '.gitignore', helper.generateGitIgnore());
+
+            // await git.add('.');
+            // await git.commit('Initial commit');
+        }
+
+        // Open project in VS Code if requested
+        if (config.openCode) {
+            exec(`cd ${projectPath} && code .`)
+        }
+
+
         // Generate .ENV
         const envJson = helper.envJson(projectTitle)
+        console.log('------>.env Created');
         writeFile(
             path.join(projectPath, ".env"),
             envJson
@@ -67,6 +84,7 @@ module.exports.masterLRF = async (req, res) => {
 
         // Generate Config.json
         const configJson = helper.keyJson()
+        console.log('------>Config file Created');
         writeFile(
             path.join(`${projectPath}/config/`, "key.js"),
             configJson
@@ -74,6 +92,7 @@ module.exports.masterLRF = async (req, res) => {
 
         // Generate Constants.js
         const constantsJson = helper.constantsJson()
+        console.log('------>constances file Created');
         writeFile(
             path.join(`${projectPath}/config/`, "constants.js"),
             constantsJson
@@ -81,12 +100,14 @@ module.exports.masterLRF = async (req, res) => {
 
         // Generate Db.js
         const dbJson = helper.dbJson()
+        console.log('------>Conection file Created');
         writeFile(
             path.join(`${projectSrcPath}/connection/`, "db.js"),
             dbJson
         );
 
         // Generate i18n file
+        console.log('------> I18n file Created');
         const i18nJson = helper.i18nJson()
         writeFile(
             path.join(`${projectSrcPath}/i18n/`, "i18n.js"),
@@ -95,6 +116,7 @@ module.exports.masterLRF = async (req, res) => {
 
         // Generate Startup service
         const startUpService = helper.startUpService()
+        console.log('------>StartUp file Created');
         writeFile(
             path.join(`${projectSrcPath}/services/`, "startUpService.js"),
             startUpService
@@ -111,9 +133,13 @@ module.exports.masterLRF = async (req, res) => {
 
         //Controllers
         helper.copyHelperFunction(projectTitle, "user.controller.js", "../controller/v1/", "src/controller/v1")
+        helper.copyHelperFunction(projectTitle, "admin.controller.js", "../controller/admin/", "src/controller/admin")
+        helper.copyHelperFunction(projectTitle, "cms.controller.js", "../controller/admin/", "src/controller/admin")
         
         //Transformer
-        helper.copyHelperFunction(projectTitle, "user.tranformer.js", "../transformer", "src/transformer")
+        helper.copyHelperFunction(projectTitle, "user.transformer.js", "../transformer", "src/transformer")
+        helper.copyHelperFunction(projectTitle, "admin.transformer.js", "../transformer", "src/transformer")
+        helper.copyHelperFunction(projectTitle, "cms.transformer.js", "../transformer", "src/transformer")
         
         //Middleware
         helper.copyHelperFunction(projectTitle, "uploadImage.js", "../middleware", "src/middleware")
@@ -126,8 +152,9 @@ module.exports.masterLRF = async (req, res) => {
         helper.copyHelperFunction(projectTitle, "cms.route.js", "../routes/admin", "src/routes/admin/")
 
         //Validation
-        helper.copyHelperFunction(projectTitle, "user.validation.js", "../validation", "src/validation/")
-        helper.copyHelperFunction(projectTitle, "user.validation.js", "../validation", "src/validation/")
+        helper.copyHelperFunction(projectTitle, "user.validation.js", "../validations", "src/validations/")
+        helper.copyHelperFunction(projectTitle, "admin.validation.js", "../validations", "src/validations/")
+        helper.copyHelperFunction(projectTitle, "cms.validation.js", "../validations", "src/validations/")
         
         //Email templates
         helper.copyHelperFunction(projectTitle, "forgot-password.ejs", "../view", "src/view/")
@@ -141,7 +168,7 @@ module.exports.masterLRF = async (req, res) => {
         helper.generateSchemaFileForAdmin(`${projectSrcPath}/models`, {
             name: "admin"
         })
-        helper.generateSchemaFileForAdmin(`${projectSrcPath}/models`, {
+        helper.generateSchemaFileForCMS(`${projectSrcPath}/models`, {
             name: "cms"
         })
 
@@ -163,7 +190,7 @@ module.exports.masterLRF = async (req, res) => {
 
         // 6. Zip the Project
         setTimeout(() => {
-            const zipDir = path.join(__dirname, `../../../${projectTitle}`);
+            const zipDir = path.join(__dirname, `../../../`);
             if (!fs.existsSync(zipDir)) {
                 fs.mkdirSync(zipDir, { recursive: true });
             }

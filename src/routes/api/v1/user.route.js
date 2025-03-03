@@ -3,7 +3,7 @@ const router = express.Router();
 const userController = require('../../../controller/v1/user.controller');
 const { userAuth } = require("../../../middleware/user.auth");
 const { validMulterUploadMiddleware, uploadImage } = require('../../../middleware/uploadImage');
-const userValidation = require("../../../validation/user.validation");
+const userValidation = require("../../../validations/user.validation");
 const { validatorFunction } = require('../../../helpers/response.helper');
 
 router.get('/', (req, res) => res.send('Welcome to User route'));

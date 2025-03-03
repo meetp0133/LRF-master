@@ -1,6 +1,6 @@
-const cmsModel = require('../../model/cms.model');
-const { constants, responseHelper } = require('../../../common/index');
-const { transformViewCms } = require('../../transformer/cms.transformer');
+const cmsModel = require('../../models/cms');
+const constants = require('../../../config/constants');
+const responseHelper = require("../../helpers/response.helper")
 
 exports.editCms = async (req, res) => {
     try {

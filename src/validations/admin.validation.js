@@ -1,6 +1,6 @@
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
-const { helper } = require('../../../common/index');
+const helper = require("../helpers/helper")
 
 module.exports.loginValidation = async (req, res, next) => {
     const schema = Joi.object({

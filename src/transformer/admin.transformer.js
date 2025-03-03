@@ -1,4 +1,4 @@
-const { helper } = require('../../common/index')
+const helper = require('../helpers/helper')
 
 exports.transformAdmin = (data) => {
     return {

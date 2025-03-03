@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../../controller/admin/admin.controller');
 const verifyToken = require('../../middleware/user.auth');
-const adminValidation = require("../../validations/admin/admin.validation");
+const adminValidation = require("../../validations/admin.validation");
 const { validatorFunction } = require('../../helpers/response.helper');
 
 router.get('/', (req, res) => res.send('Welcome to admin route'));

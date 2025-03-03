@@ -51,6 +51,11 @@ module.exports = {
             EMAIL_SERVICE = 'gmail'
         `
     },
+    generateGitIgnore: () => `node_modules\n
+package-lock.json
+public
+`,
+
     dbJson: () => {
         return `const mongoose = require('mongoose');
                 const { DB_AUTH_URL } = require('../../config/key');
@@ -354,7 +359,6 @@ module.exports = {
     generateSchemaFileForCMS: (projectPath, model) => {
 
         const staticFields = `
-    {
         title: {
             type: String,
             index: true
@@ -380,8 +384,7 @@ module.exports = {
         updatedAt: {
             type: Number,
             index: true
-        },
-    }
+        }
         `;
 
         const schemaMethods = `
@@ -451,16 +454,16 @@ module.exports = {
     });
     `},
     startUpService: () => {
-        return `const bcrypt = require("bcryptjs");
-                const Admin = require("../models/admin.model")
-                const CMS = require("../models/cms.model")
+        return `
+                const Admin = require("../models/admin")
+                const CMS = require("../models/cms")
 
                 const adminData = [
                     {
                         "firstName": "Super",
                         "lastName": "Admin",
                         "email": "admin@yopmail.com",
-                        "password": await bcrypt.hash('123456', 10),
+                        "password": "$2b$10$CIeWLW/7wNkajHPBzFWOhuZFqaSq3FVtj.hGzN94ZskGhJuK0NmZu",
                         "status": 1,
                         "profilePicture": ""
                     }
@@ -491,9 +494,9 @@ module.exports = {
                     description : "About Us",
                 }];
             
-                const createCMS =  = async () => {
+                const createCMS = async () => {
                     for (let ele of cmsData) {
-                        const cmsExists = await Admin.findOne({ email: ele.slug })
+                        const cmsExists = await CMS.findOne({ slug: ele.slug })
                         if (!cmsExists) {
                             console.log('CMS created successfully !!!');
                             await new CMS(ele).save()

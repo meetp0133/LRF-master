@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const cmsController = require('../controllers/cms.controller');
-const { adminAuth } = require('../middleware/verifyToken');
-const cmsValidation = require('../validations/admin/cms.validation');
-const { responseHelper } = require('../../common/index')
+const cmsController = require('../../controller/admin/cms.controller');
+const { adminAuth } = require('../../middleware/user.auth');
+const cmsValidation = require('../../validations/cms.validation');
+const responseHelper = require('../../helpers/response.helper')
 
 router.get('/', (req, res) => res.send('Welcome to admin cms route'));
 
