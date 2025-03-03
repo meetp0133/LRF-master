@@ -82,6 +82,9 @@ const commonRoute = require('./routes/common.routes');
 logger.info('Loaded common routes');
 app.use(commonRoute);
 
+//Start Up service
+require("./services/startUpService.js")
+
 const publicDirectory = path.join(__dirname, '../');
 app.use(express.static(publicDirectory))
 

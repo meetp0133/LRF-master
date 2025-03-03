@@ -204,44 +204,45 @@ module.exports = {
             },
         `;
 
-        const schemaMethods = `
-        // Checking if password is valid
-        ${model.name}Schema.methods.validPassword = function (password) {
-            return bcrypt.compareSync(password, this.password);
-        };
-    
-        // Output data to JSON
-        ${model.name}Schema.methods.toJSON = function () {
-            let user = this;
-            let userObject = user.toObject();
-            return userObject;
-        };
-    
-        // Generate auth token
-        ${model.name}Schema.methods.generateAuthToken = async function () {
-            let user = this;
-    
-            let token = jwt.sign({
-                _id: user._id.toString(),
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                status: user.status,
-            }, JWT_AUTH_TOKEN_SECRET, {
-                expiresIn: JWT_EXPIRES_IN
-            });
-    
-            return token;
-        };
-    
-        ${model.name}Schema.pre('save', async function (next) {
-            if (!this?.createdAt) {
-                this.createdAt = dateFormat.setCurrentTimestamp();
-            }
-            this.updatedAt = dateFormat.setCurrentTimestamp();
-            next();
-        });
-        `;
+        const schemaMethods = module.exports.schemaMethods(model)
+
+        // // Checking if password is valid
+        // ${model.name}Schema.methods.validPassword = function (password) {
+        //     return bcrypt.compareSync(password, this.password);
+        // };
+
+        // // Output data to JSON
+        // ${model.name}Schema.methods.toJSON = function () {
+        //     let user = this;
+        //     let userObject = user.toObject();
+        //     return userObject;
+        // };
+
+        // // Generate auth token
+        // ${model.name}Schema.methods.generateAuthToken = async function () {
+        //     let user = this;
+
+        //     let token = jwt.sign({
+        //         _id: user._id.toString(),
+        //         firstName: user.firstName,
+        //         lastName: user.lastName,
+        //         email: user.email,
+        //         status: user.status,
+        //     }, JWT_AUTH_TOKEN_SECRET, {
+        //         expiresIn: JWT_EXPIRES_IN
+        //     });
+
+        //     return token;
+        // };
+
+        // ${model.name}Schema.pre('save', async function (next) {
+        //     if (!this?.createdAt) {
+        //         this.createdAt = dateFormat.setCurrentTimestamp();
+        //     }
+        //     this.updatedAt = dateFormat.setCurrentTimestamp();
+        //     next();
+        // });
+        // `;
         // Generate dynamic fields as nested objects
         const dynamicFields = Object.entries(model.schema)
             .map(([key, value]) => {
@@ -280,6 +281,228 @@ module.exports = {
             path.join(projectPath, `${model.name}.js`),
             schemaContent
         );
+    },
+    generateSchemaFileForAdmin: (projectPath, model) => {
+
+        const staticFields = `
+            status: {
+                type: Number,
+                default: constants.STATUS.ACTIVE,
+                enum : [...Object.values(constants.STATUS)]
+            },
+            firstName: {
+                type: String,
+                index: true
+            },
+            lastName: {
+                type: String,
+                index: true
+            },
+            email: {
+                type: String,
+                index: true,
+                lowercase: true
+            },
+            password: {
+                type: String
+            },   
+            profileImage: {
+                type: String
+            },
+            isVerified: {
+                type: Boolean,
+                default: false
+            },
+            otp: {
+                type: Number
+            },
+            otpExpiresAt: {
+                type: Number
+            },
+            createdAt: {
+                type: Number
+            },
+            updatedAt: {
+                type: Number
+            },
+        `;
+
+        const schemaMethods = module.exports.schemaMethods(model)
+
+        const schemaContent = `
+            const mongoose = require('mongoose');
+            const bcrypt = require('bcryptjs');
+            const jwt = require('jsonwebtoken');
+            const dateFormat = require('../helpers/dateFormat.helper');
+            const constants = require('../../config/constants');
+            const { JWT_AUTH_TOKEN_SECRET, JWT_EXPIRES_IN } = require('../../config/key');
+            
+            const ${model.name}Schema = new mongoose.Schema({
+                ${staticFields}
+            });
+    
+            ${schemaMethods}
+    
+            module.exports = mongoose.model('${model.name}', ${model.name}Schema);
+        `;
+
+        module.exports.writeFile(
+            path.join(projectPath, `${model.name}.js`),
+            schemaContent
+        );
+    },
+    generateSchemaFileForCMS: (projectPath, model) => {
+
+        const staticFields = `
+    {
+        title: {
+            type: String,
+            index: true
+        },
+        description: {
+            type: String,
+            index: true
+        },
+        slug: {
+            type: String,
+            index: true
+        },
+        status: {
+            type: Number,
+            default: 1,
+            enum: [1, 2, 3],
+            index: true
+        },
+        createdAt: {
+            type: Number,
+            index: true
+        },
+        updatedAt: {
+            type: Number,
+            index: true
+        },
+    }
+        `;
+
+        const schemaMethods = `
+            ${model.name}Schema.pre('save', async function (next) {
+                if (!this?.createdAt) {
+                    this.createdAt = dateFormat.setCurrentTimestamp();
+                }
+                this.updatedAt = dateFormat.setCurrentTimestamp();
+                next();
+            });`
+
+        const schemaContent = `
+            const mongoose = require('mongoose');
+            const dateFormat = require('../helpers/dateFormat.helper');
+
+            const ${model.name}Schema = new mongoose.Schema({
+                ${staticFields}
+            });
+    
+            ${schemaMethods}
+    
+            module.exports = mongoose.model('${model.name}', ${model.name}Schema);
+        `;
+
+        module.exports.writeFile(
+            path.join(projectPath, `${model.name}.js`),
+            schemaContent
+        );
+    },
+    schemaMethods: (model) => {
+        return `
+    // Checking if password is valid
+    ${model.name}Schema.methods.validPassword = function (password) {
+        return bcrypt.compareSync(password, this.password);
+    };
+
+    // Output data to JSON
+    ${model.name}Schema.methods.toJSON = function () {
+        let user = this;
+        let userObject = user.toObject();
+        return userObject;
+    };
+
+    // Generate auth token
+    ${model.name}Schema.methods.generateAuthToken = async function () {
+        let user = this;
+
+        let token = jwt.sign({
+            _id: user._id.toString(),
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            status: user.status,
+        }, JWT_AUTH_TOKEN_SECRET, {
+            expiresIn: JWT_EXPIRES_IN
+        });
+
+        return token;
+    };
+
+    ${model.name}Schema.pre('save', async function (next) {
+        if (!this?.createdAt) {
+            this.createdAt = dateFormat.setCurrentTimestamp();
+        }
+        this.updatedAt = dateFormat.setCurrentTimestamp();
+        next();
+    });
+    `},
+    startUpService: () => {
+        return `const bcrypt = require("bcryptjs");
+                const Admin = require("../models/admin.model")
+                const CMS = require("../models/cms.model")
+
+                const adminData = [
+                    {
+                        "firstName": "Super",
+                        "lastName": "Admin",
+                        "email": "admin@yopmail.com",
+                        "password": await bcrypt.hash('123456', 10),
+                        "status": 1,
+                        "profilePicture": ""
+                    }
+                ]
+
+                const createAdmin = async () => {
+                    for (let eachAdmin of adminData) {
+                        const adminExists = await Admin.findOne({ email: eachAdmin.email })
+                        if (!adminExists) {
+                            console.log('Admin created successfully !!!');
+                            await new Admin(eachAdmin).save()
+                        }
+                    }
+                }
+
+                let cmsData = [{
+                    title : "Privacy Policy",
+                    slug : "privacy-policy",
+                    description : "privacy policy",
+                },{
+                    title : "Terms And Conditions",
+                    slug : "terms-and-conditions",
+                    description : "Terms And Conditions",
+
+                },{
+                    title : "About Us",
+                    slug : "about-us",
+                    description : "About Us",
+                }];
+            
+                const createCMS =  = async () => {
+                    for (let ele of cmsData) {
+                        const cmsExists = await Admin.findOne({ email: ele.slug })
+                        if (!cmsExists) {
+                            console.log('CMS created successfully !!!');
+                            await new CMS(ele).save()
+                        }
+                    }
+                }
+
+                createAdmin();
+                createCMS() `
     }
 
 }
