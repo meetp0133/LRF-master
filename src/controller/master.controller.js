@@ -180,7 +180,7 @@ module.exports.masterLRF = async (req, res) => {
 
         // 5. Install Dependencies (Optional)
         let dependencies = ["bcryptjs", "cors", "dotenv", "ejs", "express", "helmet", "i18n", "joi", "express-rate-limit",
-            "joi-objectid", "jsonwebtoken", "moment", "mongoose", "multer", "nodemailer", "winston", "morgan", "chai", "mocha", "supertest"]
+            "joi-objectid", "jsonwebtoken", "moment", "mongoose", "multer", "nodemailer", "winston", "morgan", "chai@^4.3.10", "mocha", "supertest"]
         if (dependencies && dependencies.length) {
             exec(
                 `npm install ${dependencies.join(" ")}`,
