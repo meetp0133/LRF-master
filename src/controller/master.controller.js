@@ -29,7 +29,8 @@ module.exports.masterLRF = async (req, res) => {
             main: "index.js",
             scripts: {
                 start: "node src/index.js",
-                dev: "nodemon src/index.js"
+                dev: "nodemon src/index.js",
+                test: "mocha src/tests/user.test.js"
             },
         };
         writeFile(
@@ -164,7 +165,7 @@ module.exports.masterLRF = async (req, res) => {
         helper.copyHelperFunction(projectTitle, "otp-verification.ejs", "../view", "src/views/emails/")
         helper.copyHelperFunction(projectTitle, "resend-otp-verification.ejs", "../view", "src/views/emails/")
         helper.copyHelperFunction(projectTitle, "welcome-user.ejs", "../view", "src/views/emails/")
-        
+
         //test case
         helper.copyHelperFunction(projectTitle, "user.test.js", "../tests", "src/tests/")
 
@@ -179,7 +180,7 @@ module.exports.masterLRF = async (req, res) => {
 
         // 5. Install Dependencies (Optional)
         let dependencies = ["bcryptjs", "cors", "dotenv", "ejs", "express", "helmet", "i18n", "joi", "express-rate-limit",
-            "joi-objectid", "jsonwebtoken", "moment", "mongoose", "multer", "nodemailer", "winston", "morgan","chai" ,"mocha","supertest"]
+            "joi-objectid", "jsonwebtoken", "moment", "mongoose", "multer", "nodemailer", "winston", "morgan", "chai", "mocha", "supertest"]
         if (dependencies && dependencies.length) {
             exec(
                 `npm install ${dependencies.join(" ")}`,
