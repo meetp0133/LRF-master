@@ -28,7 +28,7 @@ program
                         message: 'Initialize a git repository ?',
                         default: false
                     },
-                    {
+                    {                                                                                                                       
                         type: 'confirm',
                         name: 'openCode',
                         message: 'Open project in VS Code ?',

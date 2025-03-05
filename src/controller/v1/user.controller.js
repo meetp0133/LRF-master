@@ -18,11 +18,7 @@ module.exports.register = async (req, res) => {
             await deleteFilesIfAnyValidationError(req?.files ? req.files : {});
             return responseHelper.successapi(res, res.__('emailAlreadyExist'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
         }
-        const checkUserNameExist = await UserModel.findOne({ userName: reqBody.userName, isVerified: true, status: constants.STATUS.ACTIVE });
-        if (checkUserNameExist) {
-            await deleteFilesIfAnyValidationError(req?.files ? req.files : {});
-            return responseHelper.successapi(res, res.__('userNameAlreadyExist'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.BAD_REQUEST.OK);
-        }
+
         if (reqBody.password !== reqBody.confirmPassword) {
             await deleteFilesIfAnyValidationError(req?.files ? req.files : {});
             return responseHelper.successapi(res, res.__('passwordAndConfirmPasswordDidNotMatch'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.BAD_REQUEST);
@@ -77,7 +73,7 @@ module.exports.verifyUser = async (req, res) => {
 
         if (!user) return responseHelper.successapi(res, res.__('userNotFound'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
 
-        if (moment().isAfter(user.otpExpiresAt)) return responseHelper.successapi(res, res.__('otpHasBeenExpired'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
+        if (moment().isAfter(user.otpExpiresAt, 'x')) return responseHelper.successapi(res, res.__('otpHasBeenExpired'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
 
         if (reqBody.otp !== user.otp) return responseHelper.successapi(res, res.__('invalidOtp'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
 
@@ -232,7 +228,7 @@ module.exports.resetPassword = async (req, res) => {
         });
         if (!existingUser) return responseHelper.successapi(res, res.__('userNotFound'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
 
-        if (moment().isAfter(existingUser.otpExpiresAt)) return responseHelper.successapi(res, res.__('otpHasBeenExpired'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
+        if (moment().isAfter(existingUser.otpExpiresAt, 'x'))return responseHelper.successapi(res, res.__('otpHasBeenExpired'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
 
         if (reqBody.otp != existingUser.otp) return responseHelper.successapi(res, res.__('otpNotValid'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.OK);
 
@@ -270,13 +266,6 @@ module.exports.editProfile = async (req, res) => {
         const reqBody = req.body;
 
         let userData = await UserModel.findOne({ _id: userId, status: constants.STATUS.ACTIVE });
-
-        //Check username of user
-        const checkUserNameExist = await UserModel.findOne({ userName: reqBody.userName, _id: { $ne: userId }, isVerified: true, status: constants.STATUS.ACTIVE });
-        if (checkUserNameExist) {
-            await deleteFilesIfAnyValidationError(req?.files ? req.files : {});
-            return responseHelper.successapi(res, res.__('userNameAlreadyExist'), constants.META_STATUS.NO_DATA, constants.WEB_STATUS_CODE.BAD_REQUEST.OK);
-        }
 
         let oldImage = userData ? userData.profileImage : ""
 

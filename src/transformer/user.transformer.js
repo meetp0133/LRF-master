@@ -7,7 +7,7 @@ exports.userTransformer = (data) => {
         firstName: data?.firstName ? data.firstName : "",
         lastName: data?.lastName ? data.lastName : "",
         email: data?.email ? data.email : "",
-        profileImage: data?.profileImage ? imageURL(data.profileImage, 'user') : imageURL(constants.DEFAULT_IMAGES.USER, 'user'),
+        profileImage: data?.profileImage ? imageURL(data.profileImage, 'user') : '',
         isVerified: data?.isVerified ? data.isVerified : false,
       };
 };

@@ -55,8 +55,10 @@ module.exports.masterLRF = async (req, res) => {
         createDir(path.join(projectSrcPath, "helpers"));
         createDir(path.join(projectSrcPath, "transformer"));
         createDir(path.join(projectSrcPath, "services"));
-        createDir(path.join(projectSrcPath, "view"));
+        createDir(path.join(projectSrcPath, "views"));
+        createDir(path.join(`${projectSrcPath}/views`, "/emails"));
         createDir(path.join(projectSrcPath, "i18n"));
+        createDir(path.join(projectSrcPath, "tests"));
         createDir(path.join(projectPath, "config"));
 
         // Initialize git if requested
@@ -158,11 +160,13 @@ module.exports.masterLRF = async (req, res) => {
         helper.copyHelperFunction(projectTitle, "cms.validation.js", "../validations", "src/validations/")
 
         //Email templates
-        helper.copyHelperFunction(projectTitle, "forgot-password.ejs", "../view", "src/view/")
-        helper.copyHelperFunction(projectTitle, "otp-verification.ejs", "../view", "src/view/")
-        helper.copyHelperFunction(projectTitle, "resend-otp-verification.ejs", "../view", "src/view/")
-        helper.copyHelperFunction(projectTitle, "welcome-user.ejs", "../view", "src/view/")
-
+        helper.copyHelperFunction(projectTitle, "forgot-password.ejs", "../view", "src/views/emails/")
+        helper.copyHelperFunction(projectTitle, "otp-verification.ejs", "../view", "src/views/emails/")
+        helper.copyHelperFunction(projectTitle, "resend-otp-verification.ejs", "../view", "src/views/emails/")
+        helper.copyHelperFunction(projectTitle, "welcome-user.ejs", "../view", "src/views/emails/")
+        
+        //test case
+        helper.copyHelperFunction(projectTitle, "user.test.js", "../tests", "src/tests/")
 
         // 4. Generate Models
         helper.generateSchemaFile(`${projectSrcPath}/models`, models)
@@ -175,7 +179,7 @@ module.exports.masterLRF = async (req, res) => {
 
         // 5. Install Dependencies (Optional)
         let dependencies = ["bcryptjs", "cors", "dotenv", "ejs", "express", "helmet", "i18n", "joi", "express-rate-limit",
-            "joi-objectid", "jsonwebtoken", "moment", "mongoose", "multer", "nodemailer", "winston", "morgan"]
+            "joi-objectid", "jsonwebtoken", "moment", "mongoose", "multer", "nodemailer", "winston", "morgan","chai" ,"mocha","supertest"]
         if (dependencies && dependencies.length) {
             exec(
                 `npm install ${dependencies.join(" ")}`,

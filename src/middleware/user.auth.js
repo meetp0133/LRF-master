@@ -3,22 +3,23 @@ const Admin = require("../models/admin");
 const jwt = require("jsonwebtoken");
 const constants = require('../../config/constants');
 const { JWT_AUTH_TOKEN_SECRET } = require('../../config/key');
+const responseHelper = require('../helpers/response.helper');
 
 
 //User Auth
 exports.userAuth = async (req, res, next) => {
     try {
-        if (!req.header('Authorization')) return res.status(constants.WEB_STATUS_CODE.UNAUTHORIZED).json({ message: res.__("tokenNotFound") });
+        if (!req.header('Authorization')) return responseHelper.error(res, res.__('tokenNotFound'), constants.WEB_STATUS_CODE.UNAUTHORIZED);
 
         const token = req.header('Authorization').replace('Bearer ', '');
 
         let decode = jwt.verify(token, JWT_AUTH_TOKEN_SECRET);
-        if (!decode) return res.status(constants.WEB_STATUS_CODE.UNAUTHORIZED).json({ message: res.__("unAuthorizedLogin") });
+        if (!decode) return responseHelper.error(res, res.__('tokenExpired'), constants.WEB_STATUS_CODE.UNAUTHORIZED)
 
         const user = await User.findOne({ _id: decode?._id, status: constants.STATUS.ACTIVE, deletedAt: null });
-        if (!user) return res.status(constants.WEB_STATUS_CODE.UNAUTHORIZED).json({ message: res.__("userNotFound") });
+        if (!user) return responseHelper.error(res, res.__('userNotFound'), constants.WEB_STATUS_CODE.FORBIDDEN);
 
-        if (!user?.isVerified) return res.status(constants.WEB_STATUS_CODE.UNAUTHORIZED).json({ message: res.__("userAccountNotVerified") });
+        if (!user?.isVerified) return responseHelper.error(res, res.__('userAccountNotVerified'), constants.WEB_STATUS_CODE.UNAUTHORIZED)
 
         req.user = user;
         next();
@@ -28,7 +29,7 @@ exports.userAuth = async (req, res, next) => {
         if (err.message == 'jwt malformed') {
             return res.status(constants.WEB_STATUS_CODE.UNAUTHORIZED).json({ message: res.__("unAuthorizedLogin") });
         }
-        return res.status(constants.WEB_STATUS_CODE.UNAUTHORIZED).json({ message: res.__("tokenExpired") });
+        return responseHelper.error(res, res.__('tokenExpired'), constants.WEB_STATUS_CODE.UNAUTHORIZED);;
     }
 };
 
