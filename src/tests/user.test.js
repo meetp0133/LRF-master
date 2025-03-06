@@ -553,6 +553,71 @@ describe('User API Tests', () => {
     });
   });
 
+  describe('POST /change-password', () => {
+    it('should change password successfully', async () => {
+      const res = await request(baseUrl)
+        .post('/change-password') // Adjust the endpoint if necessary
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          oldPassword: '123456',
+          password: '1234567',
+          confirmPassword: '1234567'
+        });
+
+      expect(res.status).to.equal(200);
+      expect(res.body.meta.status).to.equal(1);
+      expect(res.body.meta.message).to.equal('passwordChangedSuccessfully');
+    });
+
+    it('should return error for incorrect old password', async () => {
+      const res = await request(baseUrl)
+        .post('/change-password')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          oldPassword: '123456',
+          password: '1234567',
+          confirmPassword: '1234567'
+        });
+
+      expect(res.status).to.equal(200);
+      expect(res.body.meta.status).to.equal(0);
+      expect(res.body.meta.message).to.equal('oldPasswordDoesNotMatch');
+    });
+
+    it('should return error if old and new password are same', async () => {
+      const res = await request(baseUrl)
+        .post('/change-password')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          oldPassword: '1234567',
+          password: '1234567',
+          confirmPassword: '1234567'
+        });
+
+      expect(res.status).to.equal(200);
+      expect(res.body.meta.status).to.equal(0);
+      expect(res.body.meta.message).to.equal('oldPasswordAndNewPasswordCanNotBeSame');
+    });
+
+    it('should return error if new password and confirm password do not match', async () => {
+      const res = await request(baseUrl)
+        .post('/change-password')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          oldPassword: '1234567',
+          password: '123456',
+          confirmPassword: '12345'
+        });
+
+      expect(res.status).to.equal(200);
+      expect(res.body.meta.status).to.equal(0);
+      expect(res.body.meta.message).to.equal('passwordConfirmPasswordNotSame');
+
+      await User.deleteOne({ email: email });
+
+    });
+
+  });
 
 
 });
